@@ -72,5 +72,24 @@ describe MindBody::Services::Client do
         subject.call(:hello)
       end
     end
+
+    context "params 'SiteID' is specified in the params" do
+      let(:site_id) { 999 }
+      before do
+        creds.stub(:username).and_return('')
+        @locals = { :message => { 'Request' => {
+                                    'SourceCredentials' => {
+                                       'SourceName' => 'test',
+                                       'Password' => 'test_key',
+                                       'SiteIDs' => {'int' => [site_id.to_s]}
+                                     }
+                                  }}}
+      end
+
+      it 'should use manual site_id instead of configuration site_ids' do
+        Savon::Operation.any_instance.should_receive(:call).once.with(@locals)
+        subject.call(:hello, { 'SiteID' => site_id })
+      end
+    end
   end
 end

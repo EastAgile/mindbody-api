@@ -10,7 +10,9 @@ module MindBody
         @globals.log_level(MindBody.configuration.log_level)
         locals = locals.has_key?(:message) ? locals[:message] : locals
         locals = fixup_locals(locals)
-        params = {:message => {'Request' => auth_params.merge(locals)}}
+        site_id = locals['SiteID']
+        locals.delete('SiteID')
+        params = {:message => {'Request' => auth_params(site_id).merge(locals)}}
 
         # Run the request
         response = super(operation_name, params, &block)
@@ -18,13 +20,18 @@ module MindBody
       end
 
       private
-      def auth_params
+      def auth_params(site_id)
+        if site_id != nil
+          site_ids = [site_id.to_s]
+        else
+          site_ids = MindBody.configuration.site_ids
+        end
         params = {
           'SourceCredentials' => {
             'SourceName'=> MindBody.configuration.source_name,
             'Password'=> MindBody.configuration.source_key,
             'SiteIDs'=> {
-              'int'=> MindBody.configuration.site_ids
+              'int'=> site_ids
             }
           }
         }
@@ -34,7 +41,7 @@ module MindBody
               'Username' => MindBody.configuration.username,
               'Password' => MindBody.configuration.password,
               'SiteIDs'=> {
-                'int'=> MindBody.configuration.site_ids
+                'int'=> site_ids
               }
             }
           })
