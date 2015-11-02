@@ -4,7 +4,7 @@ module MindBody
       service 'ClientService'
 
       operation :add_arrival,                    :required => [:client_id, :location_id],                                   :locals => false
-      operation :add_or_update_clients,          :required => [:clients]
+      operation :add_or_update_clients
       operation :get_clients
       operation :get_custom_client_fields,                                                                                  :locals => false
       operation :get_client_indexes,                                                                                        :locals => false
